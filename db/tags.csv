@@ -1,0 +1,4 @@
+id,tagname,userid,tag_datetime,numofobjects,type
+1,tag1,1,2014-05-21 21:37:16 +0100,2,tag
+2,tag2,1,2014-05-21 21:37:16 +0100,3,tag
+3,tag3,1,2014-05-21 21:37:16 +0100,10,tag

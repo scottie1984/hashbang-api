@@ -1,0 +1,4 @@
+*.db
+uploads/*
+spec/uploads/*
+.DS_Store

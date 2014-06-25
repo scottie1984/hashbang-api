@@ -1,0 +1,2 @@
+backend_url: "localhost:9292"
+frontend_url: "localhost:8000"
