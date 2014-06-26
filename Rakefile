@@ -1,5 +1,4 @@
 require 'grape'
-require 'rspec/core/rake_task'
 
 require_relative 'config/application.rb'
 
@@ -28,24 +27,6 @@ namespace :db do
     rm_f 'hashbang.db'
   end
 
-  desc 'Prepare testing database'
-  task :testprep do
-    puts "Deleting old test db... if it exits"
-    rm_f 'hashbang_test.db'
-    puts "Creating test db... "
-    puts "Seeding database..."
-    HashBangDB.seed_uploads(Parser.parse_uploads('db/uploads.csv', Uploadmodel))
-    HashBangDB.seed_tags(Parser.parse_tags('db/tags.csv', Tag))
-    HashBangDB.seed_tag_objects(Parser.parse_tag_objects('db/tag_objects.csv'))
-    puts "Done"
-  end
-
-end
-
-desc "Run the specs"
-task :spec do
-  Rake::Task['db:testprep'].invoke
-  RSpec::Core::RakeTask.new(:spec)
 end
 
 
