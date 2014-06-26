@@ -1,5 +1,5 @@
 #resize demo
-require 'rmagick'
+require 'RMagick'
 
 fname = '../../spec/uploads/cat.jpg'
 newFileLarge = '../../spec/uploads/resize_large.jpg'
