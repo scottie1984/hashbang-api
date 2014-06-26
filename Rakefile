@@ -12,7 +12,7 @@ namespace :db do
     end
     FileUtils.copy_entry 'db/local/uploads', 'uploads'
     puts "Deleting old db... if it exits"
-    rm_f 'hashbang.db'
+    HashBangDB.drop()
     puts "Creating the hashbang database..."
     HashBangDB.setup()
     puts "Seeding database..."
@@ -25,6 +25,7 @@ namespace :db do
   desc "Drop the databases"
   task :drop do
     puts "Deleting the database..."
+    HashBangDB.setup()
     rm_f 'hashbang.db'
   end
 

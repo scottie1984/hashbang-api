@@ -167,4 +167,54 @@ module HashBangDB
     end
   end
   
+  def self.drop[]()
+    
+    db_parts = ENV['DATABASE_URL'].split(/\/|:|@/)
+      username = db_parts[3]
+      password = db_parts[4]
+      host = db_parts[5]
+      db = db_parts[7]
+      conn = PGconn.open(:host =>  host, :dbname => db, :user=> username, :password=> password)
+    conn.exec(
+      <<-SQL
+      DROP TABLE users cascade;
+      SQL
+    )
+    conn.exec(
+      <<-SQL
+      DROP TABLE session cascade;
+      SQL
+    )
+    conn.exec(
+      <<-SQL
+      DROP TABLE user_token cascade;
+      SQL
+    )
+    conn.exec(
+      <<-SQL
+      DROP TABLE uploads cascade;
+      SQL
+    )
+    conn.exec(
+      <<-SQL
+      DROP TABLE ratings cascade;
+      SQL
+    )  
+    conn.exec(
+      <<-SQL
+      DROP TABLE tags cascade;
+      SQL
+    )
+    conn.exec(
+      <<-SQL
+      DROP TABLE tag_objects cascade;
+      SQL
+    )
+    conn.exec(
+    <<-SQL
+    DROP TABLE comments cascade;
+    SQL
+    )
+  end
+  
 end
