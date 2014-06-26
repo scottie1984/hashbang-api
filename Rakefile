@@ -14,6 +14,7 @@ namespace :db do
     puts "Deleting old db... if it exits"
     rm_f 'hashbang.db'
     puts "Creating the hashbang database..."
+    HashBangDB.setup()
     puts "Seeding database..."
     HashBangDB.seed_uploads(Parser.parse_uploads('db/local/uploads.csv', Uploadmodel))
     HashBangDB.seed_tags(Parser.parse_tags('db/local/tags.csv', Tag))
