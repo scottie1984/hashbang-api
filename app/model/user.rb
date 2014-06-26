@@ -2,8 +2,6 @@ require 'bcrypt'
 require 'net/smtp'
 require 'yaml'
 
-$db = SQLite3::Database.open './hashbang.db'
-
   class User
     
     /USERS =/ 
