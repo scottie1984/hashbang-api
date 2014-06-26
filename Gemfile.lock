@@ -166,5 +166,4 @@ DEPENDENCIES
   rack-test
   rmagick
   rspec
-  sqlite3
   warden
