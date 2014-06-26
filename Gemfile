@@ -1,7 +1,6 @@
 source 'https://rubygems.org'
 
 gem 'grape'
-gem 'sqlite3'
 gem 'rack-contrib'
 gem 'warden'
 gem 'bcrypt'
@@ -9,6 +8,7 @@ gem 'rack-cors'
 gem 'activerecord'
 gem 'rmagick'
 gem 'psych'
+gem 'pg'
 
 group :development, :test do
   gem 'rack-test'

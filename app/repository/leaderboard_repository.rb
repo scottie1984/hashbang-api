@@ -1,10 +1,10 @@
-require 'sqlite3'
+require 'pg'
 
 require_relative './../model/tag'
 require_relative './../model/uploadmodel'
 require_relative './../helpers/upload_model_helper'
 
-$db = SQLite3::Database.open 'hashbang.db'
+$conn = PGconn.open(:dbname => 'hashbang')
 
 class LeaderboardRepository
   
@@ -15,11 +15,11 @@ class LeaderboardRepository
       WHERE uploads.id = tag_objects.objectId
       AND tags.id = tag_objects.tagId
       AND uploads.userid = users.id
-      AND tags.tagName = ?
+      AND tags.tagName = $1
       ORDER BY uploads.overallScore DESC
-      LIMIT ?
+      LIMIT $2
       SQL
-    results = $db.execute(select, tag, numberToGet)
+    results = $conn.exec_params(select, [tag, numberToGet])
     uploads = UploadModelHelper.cast_upload_results results
   end
   
@@ -29,10 +29,10 @@ class LeaderboardRepository
       FROM uploads u, tag_objects, tags
       WHERE u.id = tag_objects.objectId
       AND tags.id = tag_objects.tagId
-      AND tags.tagName = ?
+      AND tags.tagName = $1
       ORDER BY u.overallScore DESC
       SQL
-    results = $db.execute(select, tag)
+    results = $conn.exec_params(select, [tag])
   end
   
 end

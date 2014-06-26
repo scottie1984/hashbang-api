@@ -1,27 +1,27 @@
-require 'sqlite3'
+require 'pg'
 
-$db = SQLite3::Database.open 'hashbang.db'
+$conn = PGconn.open(:dbname => 'hashbang')
 
 class UserRepository
 
   def self.getUsername(id)
     select =  <<-SQL
       select username from users
-      where id = ?
+      where id = $1
       SQL
-    row = $db.get_first_row(select, id)
+    row = $conn.exec_params(select, [id])
     row[0]
   end
   
   def self.popular(number)
     select =  <<-SQL
-      select "","",us.username, sum(up.overallScore), "user" as totalScore from uploads up, users us
+      select ',',us.username, sum(up.overallScore), 'user' as totalScore from uploads up, users us
       where up.userid = us.id
-      group by up.userid
+      group by up.userid,us.username
       order by totalScore desc
-      limit ?
+      limit $1
       SQL
-    rows = $db.execute(select, number)
+    rows = $conn.exec_params(select, [number])
     rows
   end
 

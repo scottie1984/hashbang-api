@@ -1,8 +1,8 @@
-require 'sqlite3'
+require 'pg'
 
 require_relative './../helpers/upload_model_helper'
 
-$db = SQLite3::Database.open 'hashbang.db'
+$conn = PGconn.open(:dbname => 'hashbang')
 $upload_dir = 'uploads'
 
 class UploadRepository
@@ -13,7 +13,7 @@ class UploadRepository
       FROM uploads up, users u
       WHERE up.userid = u.id
       SQL
-    results = $db.execute(select)
+    results = $conn.exec_params(select)
     UploadModelHelper.cast_upload_results results
   end
 
@@ -21,10 +21,10 @@ class UploadRepository
     select =  <<-SQL
       SELECT *
       FROM uploads up, users u
-      WHERE up.id = ?
+      WHERE up.id = $1
       AND up.userid = u.id
       SQL
-    results = $db.execute(select, id)
+    results = $conn.exec_params(select, [id])
     uploads = UploadModelHelper.cast_upload_results results
     if uploads.count == 1
       uploads[0]
@@ -38,13 +38,13 @@ class UploadRepository
       SELECT *
       FROM uploads up, users u
       WHERE up.userid = u.id
-      AND up.title like ?
-      AND up.type like ?
+      AND up.title like $1
+      AND up.type like $2
       order by up.title asc
-      LIMIT ?
+      LIMIT $3
       SQL
     search = '%' + search + '%'
-    results = $db.execute(select, search, type, number)
+    results = $conn.exec_params(select, [search, type, number])
     uploads = UploadModelHelper.cast_upload_results results
     uploads
   end
@@ -54,13 +54,13 @@ class UploadRepository
       SELECT *
       FROM uploads up, users u
       WHERE up.userid = u.id
-      AND up.title like ?
-      AND up.type like ?
+      AND up.title like $1
+      AND up.type like $2
       order by up.overallScore desc
-      LIMIT ?
+      LIMIT $3
       SQL
     search = '%' + search + '%'
-    results = $db.execute(select, search, type, number)
+    results = $conn.exec_params(select, [search, type, number])
     uploads = UploadModelHelper.cast_upload_results results
     uploads
   end
@@ -70,13 +70,13 @@ class UploadRepository
       SELECT *
       FROM uploads up, users u
       WHERE up.userid = u.id
-      AND up.title like ?
-      AND up.type like ?
+      AND up.title like $1
+      AND up.type like $2
       order by up.upload_datetime desc
-      LIMIT ?
+      LIMIT $3
       SQL
     search = '%' + search + '%'
-    results = $db.execute(select, search, type, number)
+    results = $conn.exec_params(select, [search, type, number])
     uploads = UploadModelHelper.cast_upload_results results
     uploads
   end
@@ -86,12 +86,12 @@ class UploadRepository
       SELECT *
       FROM uploads up, users u
       WHERE up.userid = u.id
-      AND up.title like ?
-      AND up.type like ?
+      AND up.title like $1
+      AND up.type like $2
       order by up.upload_datetime desc
       SQL
     search = '%' + search + '%'
-    results = $db.execute(select, search, type).sample(number.to_i)
+    results = $conn.exec_params(select, [search, type]).sample(number.to_i)
     uploads = UploadModelHelper.cast_upload_results results
     uploads
   end

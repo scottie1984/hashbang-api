@@ -40,7 +40,7 @@ class TagHelper
 
   def self.cast_results(results)
     tags = Array.new
-    results.each { |r| tags << Tag.new(r[2], r[1], r[0]) }
+    results.each { |r| tags << Tag.new(r['tagname'], r['userid'], r['id']) }
     tags
   end
 

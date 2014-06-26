@@ -1,6 +1,6 @@
 require_relative './../helpers/upload_model_helper'
-
-$db = SQLite3::Database.open 'hashbang.db'
+require 'pg'
+$conn = PGconn.open(:dbname => 'hashbang')
 
 class TagUploadRepository
 
@@ -11,10 +11,12 @@ def self.get_random_object_bytagname(id, excludeIds, tagType)
     WHERE u.id = tag_objects.objectId
     AND tags.id = tag_objects.tagId
     AND u.userid = us.id
-    AND tags.tagName = ?
-    AND tags.type = ?
+    AND tags.tagName = $1
+    AND tags.type = $2
     SQL
-  results = $db.execute(select, id, tagType)
+  results = $conn.exec_params(select, [id, tagType])
+  
+  puts results
   
   uploads = UploadModelHelper.cast_upload_results results
   uploads_temp = uploads

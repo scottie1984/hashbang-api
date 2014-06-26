@@ -6,12 +6,12 @@ class UploadModelHelper
   def self.cast_upload_results(results)
     uploads = Array.new
     results.each { |r|
-      upload = Uploadmodel.new(r[2], r[3], r[4], r[12], r[9], r[10], r[1], r[0], r[6], r[7], r[8], r[14])
+      upload = Uploadmodel.new(r['type'], r['file_name'], r['original_file_name'], r['userid'], r['title'], r['description'], r['upload_datetime'], r['id'], r['overallscore'], r['numofratings'], r['averagescore'], r['email'])
       upload.tags = TagRepository.find_by_object_id upload.id 
       tags_rank = Hash.new
       upload.tags.each { |tag|
         leaderboard = LeaderboardRepository.get_add_leaders_bytagname(tag.tagName)
-        tags_rank[tag.tagName] = leaderboard.index { |x| x[0] == r[0] } + 1
+        #tags_rank[tag.tagName] = leaderboard.index { |x| x[0] == r['id'] } + 1
       }
       upload.tags_with_rank = tags_rank
       upload.comments = CommentRepository.find_by_object_id upload.id

@@ -12,15 +12,16 @@ class TagCloud
     minCount = 9999999
     maxCount = 0
     tagJson = tags.each { |tag|
-      if minCount > tag[3] then
-        minCount = tag[3]
+      puts tag
+      if minCount > tag['numofobjects'].to_i then
+        minCount = tag['numofobjects'].to_i
       end
 
-      if maxCount < tag[3] then
-        maxCount = tag[3]
+      if maxCount < tag['numofobjects'].to_i then
+        maxCount = tag['numofobjects'].to_i
       end
       
-      randomObject = TagUploadRepository.get_random_object_bytagname tag[2], Array[-1], tag[4]
+      randomObject = TagUploadRepository.get_random_object_bytagname tag['tagname'], Array[-1], tag['type']
       
       randomId = 1
       type = 'image'
@@ -34,9 +35,9 @@ class TagCloud
       end
         
       json_new.push(JSON.parse({
-        "id"=> tag[0], 
-        "tag" => tag[2],
-        "count" => tag[3],
+        "id"=> tag['id'], 
+        "tag" => tag['tagname'],
+        "count" => tag['numofobjects'],
         "type" => type,
         "video_id" => video_id,
         "random_id" => randomId,
