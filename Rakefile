@@ -1,4 +1,3 @@
-require 'sqlite3'
 require 'grape'
 require 'rspec/core/rake_task'
 
@@ -16,11 +15,10 @@ namespace :db do
     puts "Deleting old db... if it exits"
     rm_f 'hashbang.db'
     puts "Creating the hashbang database..."
-    HashBangDB.setup(SQLite3::Database.new('hashbang.db'))
     puts "Seeding database..."
-    HashBangDB.seed_uploads(Parser.parse_uploads('db/local/uploads.csv', Uploadmodel), SQLite3::Database.new('hashbang.db'))
-    HashBangDB.seed_tags(Parser.parse_tags('db/local/tags.csv', Tag), SQLite3::Database.new('hashbang.db'))
-    HashBangDB.seed_tag_objects(Parser.parse_tag_objects('db/local/tag_objects.csv'), SQLite3::Database.new('hashbang.db'))
+    HashBangDB.seed_uploads(Parser.parse_uploads('db/local/uploads.csv', Uploadmodel))
+    HashBangDB.seed_tags(Parser.parse_tags('db/local/tags.csv', Tag))
+    HashBangDB.seed_tag_objects(Parser.parse_tag_objects('db/local/tag_objects.csv'))
     puts "Done"
   end
 
@@ -35,11 +33,10 @@ namespace :db do
     puts "Deleting old test db... if it exits"
     rm_f 'hashbang_test.db'
     puts "Creating test db... "
-    HashBangDB.setup(SQLite3::Database.new('hashbang_test.db'))
     puts "Seeding database..."
-    HashBangDB.seed_uploads(Parser.parse_uploads('db/uploads.csv', Uploadmodel), SQLite3::Database.new('hashbang_test.db'))
-    HashBangDB.seed_tags(Parser.parse_tags('db/tags.csv', Tag), SQLite3::Database.new('hashbang_test.db'))
-    HashBangDB.seed_tag_objects(Parser.parse_tag_objects('db/tag_objects.csv'), SQLite3::Database.new('hashbang_test.db'))
+    HashBangDB.seed_uploads(Parser.parse_uploads('db/uploads.csv', Uploadmodel))
+    HashBangDB.seed_tags(Parser.parse_tags('db/tags.csv', Tag))
+    HashBangDB.seed_tag_objects(Parser.parse_tag_objects('db/tag_objects.csv'))
     puts "Done"
   end
 
