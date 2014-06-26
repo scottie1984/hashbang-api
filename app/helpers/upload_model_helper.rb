@@ -6,7 +6,9 @@ class UploadModelHelper
   def self.cast_upload_results(results)
     uploads = Array.new
     results.each { |r|
-      upload = Uploadmodel.new(r['type'], r['file_name'], r['original_file_name'], r['userid'], r['title'], r['description'], r['upload_datetime'], r['id'], r['overallscore'], r['numofratings'], r['averagescore'], r['email'])
+      puts r
+      puts r['upid']
+      upload = Uploadmodel.new(r['uploadtype'], r['file_name'], r['original_file_name'], r['userid'], r['title'], r['description'], r['upload_datetime'], r['upid'], r['overallscore'], r['numofratings'], r['averagescore'], r['email'])
       upload.tags = TagRepository.find_by_object_id upload.id 
       tags_rank = Hash.new
       upload.tags.each { |tag|

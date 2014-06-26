@@ -2,19 +2,25 @@ require 'pg'
 
 require_relative './../helpers/upload_model_helper'
 
-db_parts = ENV['DATABASE_URL'].split(/\/|:|@/)
+env = ENV['DATABASE_URL'] || 'localhost'
+
+if env == 'localhost'
+  $conn = PGconn.open(:dbname => 'hashbang', :user=> 'postgres')
+else
+  db_parts = ENV['DATABASE_URL'].split(/\/|:|@/)
   username = db_parts[3]
   password = db_parts[4]
   host = db_parts[5]
   db = db_parts[7]
   $conn = PGconn.open(:host =>  host, :dbname => db, :user=> username, :password=> password)
+end
 $upload_dir = 'uploads'
 
 class UploadRepository
 
   def self.all
     select = <<-SQL
-      SELECT *
+      SELECT *, up.type as uploadtype, up.id as upid
       FROM uploads up, users u
       WHERE up.userid = u.id
       SQL
@@ -24,7 +30,7 @@ class UploadRepository
 
   def self.get_by_id(id)
     select =  <<-SQL
-      SELECT *
+      SELECT *, up.type as uploadtype, up.id as upid
       FROM uploads up, users u
       WHERE up.id = $1
       AND up.userid = u.id
@@ -40,7 +46,7 @@ class UploadRepository
   
   def self.alphabetic(search, number, type)
     select =  <<-SQL
-      SELECT *
+      SELECT *, up.type as uploadtype, up.id as upid
       FROM uploads up, users u
       WHERE up.userid = u.id
       AND up.title like $1
@@ -56,7 +62,7 @@ class UploadRepository
   
   def self.popular(search, number, type)
     select =  <<-SQL
-      SELECT *
+      SELECT *, up.type as uploadtype, up.id as upid
       FROM uploads up, users u
       WHERE up.userid = u.id
       AND up.title like $1
@@ -72,7 +78,7 @@ class UploadRepository
   
   def self.recent(search, number, type)
     select =  <<-SQL
-      SELECT *
+      SELECT *, up.type as uploadtype, up.id as upid
       FROM uploads up, users u
       WHERE up.userid = u.id
       AND up.title like $1
@@ -88,7 +94,7 @@ class UploadRepository
   
   def self.random(search, number, type)
     select =  <<-SQL
-      SELECT *
+      SELECT *, up.type as uploadtype, up.id as upid
       FROM uploads up, users u
       WHERE up.userid = u.id
       AND up.title like $1
