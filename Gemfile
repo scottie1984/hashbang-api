@@ -9,6 +9,7 @@ gem 'activerecord'
 gem 'rmagick'
 gem 'psych'
 gem 'pg'
+gem 'thin'
 
 group :development, :test do
   gem 'rack-test'

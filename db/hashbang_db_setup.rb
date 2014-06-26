@@ -4,7 +4,7 @@ module HashBangDB
   
   def self.setup()
     
-  conn = PGconn.open(:dbname => 'hashbang', :user => 'postgres')
+  conn = PGconn.open(:dbname => 'copper', :user => 'postgres')
     conn.exec(
       <<-SQL
       CREATE TABLE users (
