@@ -167,7 +167,7 @@ module HashBangDB
     end
   end
   
-  def self.drop[]()
+  def self.drop()
     
     db_parts = ENV['DATABASE_URL'].split(/\/|:|@/)
       username = db_parts[3]
