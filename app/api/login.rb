@@ -1,5 +1,4 @@
 require 'grape'
-require 'sqlite3'
 require 'json'
 require 'rack/contrib'
 require 'warden'
