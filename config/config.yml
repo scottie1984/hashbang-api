@@ -1,2 +1,2 @@
-backend_url: "localhost:9292"
-frontend_url: "localhost:8000"
+backend_url: "hashbangit.herokuapp.com"
+frontend_url: "hashbang-frontend.herokuapp.com"
