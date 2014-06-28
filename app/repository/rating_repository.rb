@@ -20,7 +20,7 @@ class RatingRepository
   def self.save(rating)
     insert =  <<-SQL
       INSERT INTO ratings
-      values (NULL, now(), $1, $2, $3, $4)
+      values (DEFAULT, now(), $1, $2, $3, $4)
       SQL
       $conn.exec_params(insert, [rating.againstTag, rating.objectId, rating.score, rating.userid])
   end
