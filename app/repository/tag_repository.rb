@@ -25,9 +25,9 @@ class TagRepository
       INSERT INTO tags
       values (NULL, ?, ?, datetime('now'), 0, ?)
       SQL
-      $db.execute(insert, tag.tagName, tag.userId, tag.type)
-    tagId = $db.last_insert_row_id()
-    tagId
+      #$db.execute(insert, tag.tagName, tag.userId, tag.type)
+    #tagId = $db.last_insert_row_id()
+    #tagId
   end
   
   def self.findByName(tagName)

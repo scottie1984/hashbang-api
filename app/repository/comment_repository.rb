@@ -30,7 +30,6 @@ class CommentRepository
   end
   
   def self.find_by_object_id(object_id)
-    conn = PGconn.open(:dbname => 'hashbang')
     select = <<-SQL
       SELECT c.id, us.username, c.comment, c.comment_datetime, us.email
       FROM comments c 
@@ -44,7 +43,6 @@ class CommentRepository
   end
   
   def self.delete(id)
-    conn = PGconn.open(:dbname => 'hashbang')
     delete =  <<-SQL
       DELETE FROM comments
       WHERE id = $1

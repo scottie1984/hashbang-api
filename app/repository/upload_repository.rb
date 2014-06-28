@@ -112,8 +112,8 @@ class UploadRepository
       INSERT INTO uploads
       values (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       SQL
-    $db.execute(insert, upload.upload_datetime, upload.type, upload.file_name, upload.original_file_name, upload.userid, upload.overallScore, upload.numOfRatings, upload.averageScore , upload.title, upload.description)
-    upload_id = $db.last_insert_row_id()
+    #$db.execute(insert, upload.upload_datetime, upload.type, upload.file_name, upload.original_file_name, upload.userid, upload.overallScore, upload.numOfRatings, upload.averageScore , upload.title, upload.description)
+    #upload_id = $db.last_insert_row_id()
   end
 
   def self.transfer_file(file, file_name)
