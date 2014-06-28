@@ -25,7 +25,7 @@ class TagCloud
       
       randomId = 1
       type = 'image'
-      video_id = 'xxx'
+      video_id = 'cat.jpg'
       md5gravatar = 'xxx'
       if randomObject != false then
         randomId = randomObject.id
