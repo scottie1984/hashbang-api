@@ -29,8 +29,8 @@ class Uploadmodel
 
   def to_json(*a)
     md5gravatar = Digest::MD5.hexdigest(@gravatar)
-    {"id" => @id, "type" => @type, "file_name" => @file_name, "original_file_name" => @original_file_name, "file_name" => "http://#{CONFIG['backend_url']}/upload/#{@id}/download", 
-    "file_name_thumb" => "http://#{CONFIG['backend_url']}/upload/#{@id}/download/thumb", "file_name_medium" => "http://#{CONFIG['backend_url']}/upload/#{@id}/download/medium", "userid" => @userid, 
+    {"id" => @id, "type" => @type, "file_name" => @file_name, "original_file_name" => @original_file_name, "file_name" => "#{CONFIG['backend_url']}/#{@file_name}", 
+    "file_name_thumb" => "#{CONFIG['backend_url']}/#{@file_name}_thump.jpg", "file_name_medium" => "#{CONFIG['backend_url']}/#{@file_name}_medium.jpg", "userid" => @userid, 
     "upload_datetime" => @upload_datetime, "overallScore" => @overallScore, "numOfRatings" => @numOfRatings, "title" => @title, "description" => @description, "tags" => JSON.parse(@tags.to_json), 
     "tags_with_rank" => JSON.parse(@tags_with_rank.to_json),"comments" => JSON.parse(CommentHelper.toJSON(@comments)), "gravatar" => md5gravatar}.to_json(*a)
   end

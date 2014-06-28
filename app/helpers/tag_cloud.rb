@@ -41,9 +41,9 @@ class TagCloud
         "type" => type,
         "video_id" => video_id,
         "random_id" => randomId,
-        "file_name" => "http://#{CONFIG['backend_url']}/upload/#{randomId}/download",
-        "file_name_thumb" => "http://#{CONFIG['backend_url']}/upload/#{randomId}/download/thumb",
-        "file_name_medium" => "http://#{CONFIG['backend_url']}/upload/#{randomId}/download/medium",
+        "file_name" => "#{CONFIG['backend_url']}/#{video_id}",
+        "file_name_thumb" => "#{CONFIG['backend_url']}/#{video_id}_thumb.jpg",
+        "file_name_medium" => "#{CONFIG['backend_url']}/#{video_id}_medium.jpg",
         "gravatar" => md5gravatar
       }.to_json))
   }
