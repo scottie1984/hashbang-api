@@ -5,14 +5,14 @@ class CommentHelper
     json_new = []
     
     comments.each { |comment|
-      
-      md5gravatar = Digest::MD5.hexdigest(comment[4])
+      puts comment
+      md5gravatar = Digest::MD5.hexdigest(comment['email'])
         
       json_new.push(JSON.parse({
-        "id"=> comment[0], 
-        "username" => comment[1],
-        "comment" => comment[2],
-        "datetime" => minutes_in_words(comment[3].to_datetime),
+        "id"=> comment['id'], 
+        "username" => comment['username'],
+        "comment" => comment['comment'],
+        "datetime" => minutes_in_words(comment['comment_datetime'].to_datetime),
         "gravatar" => md5gravatar
       }.to_json))
     }

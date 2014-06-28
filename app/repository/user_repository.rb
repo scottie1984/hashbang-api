@@ -21,7 +21,7 @@ class UserRepository
       where id = $1
       SQL
     row = $conn.exec_params(select, [id])
-    row[0]
+    row[0]['username']
   end
   
   def self.popular(number)

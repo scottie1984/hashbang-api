@@ -1,6 +1,20 @@
 require 'bcrypt'
 require 'net/smtp'
 require 'yaml'
+require 'pg'
+
+env = ENV['DATABASE_URL'] || 'localhost'
+
+if env == 'localhost'
+  $conn = PGconn.open(:dbname => 'hashbang', :user=> 'postgres')
+else
+  db_parts = ENV['DATABASE_URL'].split(/\/|:|@/)
+  username = db_parts[3]
+  password = db_parts[4]
+  host = db_parts[5]
+  db = db_parts[7]
+  $conn = PGconn.open(:host =>  host, :dbname => db, :user=> username, :password=> password)
+end
 
   class User
     
@@ -21,7 +35,7 @@ require 'yaml'
     end
     
     def self.usernameDoesNotExist(username)
-      row = $db.get_first_row("select * from users where username = ?", username)
+      row = $conn.exec_params("select * from users where username = $1", [username])
       userDoesNotExists = false
       if row == nil
         userDoesNotExists = true
@@ -30,7 +44,7 @@ require 'yaml'
     end
 
     def self.emailDoesNotExist(email)
-      row = $db.get_first_row("select * from users where email = ?", email)
+      row = $conn.exec_params("select * from users where email = $1", [email])
       emailDoesNotExists = false
       if row == nil
         emailDoesNotExists = true
@@ -39,18 +53,19 @@ require 'yaml'
     end    
 
     def self.getEmailAddress(userId)
-      $db.get_first_row("select email from users where id = ?", userId)
+      $conn.exec_params("select email from users where id = $1", [userId])
     end   
     
     def self.save(username, password, email)
       insert =  <<-SQL
         INSERT INTO users
-        values (NULL, ?, ?, ?, "inactive", 0)
+        values (DEFAULT, $1, $2, $3, "inactive", 0)
+        RETURNING id
         SQL
-      $db.execute(insert, username, Password.create(password),email)
-      userId = $db.last_insert_row_id()
       
-      token = createToken(userId)
+      userId = $conn.exec_params(insert, [username, Password.create(password),email])
+      
+      token = createToken(userId[0])
       sendNewUserEmail(email, token)  
     end
     
@@ -70,7 +85,7 @@ require 'yaml'
     end
     
     def self.sendForgotPassword(email)
-      row = $db.get_first_row("select * from users where email = ? and status='active' and loginAttempts < 5", email)
+      row = $conn.exec_params("select * from users where email = $1 and status='active' and loginAttempts < 5", [email])
       if row != nil
         token = createToken(row[0]) 
         sendForgotPasswordEmail(email, token)
@@ -81,9 +96,9 @@ require 'yaml'
       token = SecureRandom.uuid
         insertToken =  <<-SQL
           INSERT INTO user_token
-          values (NULL, ?, datetime('now', '+30 minutes'), ?)
+          values (DEFAULT, $1, now()+ '30 minutes'::interval, ?)
           SQL
-      $db.execute(insertToken, userId, token)
+      $conn.exec_params(insertToken, [userId, token])
       token
     end
     
@@ -125,22 +140,22 @@ require 'yaml'
       update =  <<-SQL
         update users
         set status = "active"  
-        where id = ?
+        where id = $1
         SQL
-        $db.execute(update, id)
+        $conn.exec_params(update, [id])
     end
     
     def self.getActiveToken(token)
-      $db.get_first_row("select * from user_token where token = ? and expires > datetime('now')", token)
+      $conn.exec_params("select * from user_token where token = $1 and expires > now()", [token])
     end
     
     def self.changePassword(userid, password)
       update =  <<-SQL
         update users
-        set password = ? 
-        where id = ?
+        set password = $1 
+        where id = $2
         SQL
-        $db.execute(update, Password.create(password), userid)
+        $conn.exec_params(update, [Password.create(password), userid])
     end
 
     class << self
@@ -148,27 +163,27 @@ require 'yaml'
       include BCrypt
 
       def get(token)
-        row = $db.get_first_row("select * from session where token = ? and expires > datetime('now')", token)
-        if row != nil
-          $db.execute( "update session set expires= datetime('now', '+30 minutes')  where id = ?",  row[0])
-          User.new(row[1], row[2], row[5])
+        row = $conn.exec_params("select * from session where token = $1 and expires > now()", [token])
+        puts row
+        if !row.num_tuples.zero?
+          $conn.exec_params( "update session set expires= now()+ '30 minutes'::interval  where id = $1",  [row[0]['id']])
+          User.new(row[0]['userid'], row[0]['username'], row[0]['token'])
         end
       end
       
       def logout(token)
         delete =  <<-SQL
         DELETE FROM session
-        WHERE token = ?
+        WHERE token = $1
         SQL
-        $db.execute(delete, token)
+        $conn.exec_params(delete, [token])
       end
       
       def authenticate(u, p)
-        row = $db.get_first_row("select * from users where username = ? and status='active' and loginAttempts < 5", u)
-        
-        if row != nil
-          userId = row[0]
-          currentPassword = row[2]
+        row = $conn.exec_params("select * from users where username = $1 and status='active' and loginAttempts < 5", [u])
+        if !row.num_tuples.zero?
+          userId = row[0]['id']
+          currentPassword = row[0]['password']
           
           matchingPass = false
           matchingPass = Password.new(currentPassword) == p 
@@ -188,27 +203,27 @@ require 'yaml'
       def insertSession(id, username, token)
         insert =  <<-SQL
         INSERT INTO session
-        values (NULL, ? , ? , datetime('now', '+30 minutes'), ?)
+        values (DEFAULT, $1 , $2 , now()+ '30 minutes'::interval, $3)
         SQL
-        $db.execute(insert, id, username, token)
+        $conn.exec_params(insert, [id, username, token])
       end 
       
       def resetLoginAttempts(id)
         update =  <<-SQL
           update users
           set loginAttempts = 0
-          where id = ?
+          where id = $1
           SQL
-          $db.execute(update, id) 
+          $conn.exec_params(update, [id]) 
       end 
       
       def increaseLoginAttempts(id)
         update =  <<-SQL
           update users
           set loginAttempts = loginAttempts + 1 
-          where id = ?
+          where id = $1
           SQL
-          $db.execute(update, id)
+          $conn.exec_params(update, [id])
       end
 
     end
