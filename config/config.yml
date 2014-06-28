@@ -1,2 +1,2 @@
-backend_url: "https://s3-eu-west-1.amazonaws.com/hashbang/"
+backend_url: "https://s3-eu-west-1.amazonaws.com/hashbang"
 frontend_url: "hashbang-frontend.herokuapp.com"
