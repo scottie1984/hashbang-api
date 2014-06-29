@@ -22,7 +22,8 @@ module SocialChallenges
     end
 
     get '/:id' do
-      upload = UploadRepository.get_by_id(params[:id])
+      id =  params[:id]
+      upload = UploadRepository.get_by_id(id.to_i)
       if !upload then
         error! 'Upload not found', 404
       else
@@ -145,7 +146,7 @@ module SocialChallenges
         UploadRepository.transfer_file file, file_name
       end
       TagHelper.process_tags tags_csv, upload_id, user.id
-      upload_id
+      upload_id.to_i
     end
     
     get '/:type/:mode/:search/:number' do
