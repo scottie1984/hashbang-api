@@ -23,18 +23,18 @@ class TagRepository
   def self.save(tag)
     insert =  <<-SQL
       INSERT INTO tags
-      values (NULL, ?, ?, datetime('now'), 0, ?)
+      values (DEFAULT, $1, $2, now(), 0, $3)
+      RETURNING id
       SQL
-      #$db.execute(insert, tag.tagName, tag.userId, tag.type)
-    #tagId = $db.last_insert_row_id()
-    #tagId
+     tagId = $conn.exec_params(insert, [tag.tagName, tag.userId, tag.type])
+    tagId[0]['id']
   end
   
   def self.findByName(tagName)
     row = $conn.exec_params("select * from tags where tagName = $1 and type='tag'", [tagName])
     tagId = -1
-    if row != nil
-      tagId = row[0]
+    if !row.num_tuples.zero?
+      tagId = row[0]['id']
     end
     tagId
   end
@@ -42,8 +42,8 @@ class TagRepository
   def self.findUserTagByName(tagName)
     row = $conn.exec_params("select * from tags where tagName = $1 and type='user'", [tagName])
     tagId = -1
-    if row != nil
-      tagId = row[0]
+    if !row.num_tuples.zero?
+      tagId = row[0]['id']
     end
     tagId
   end
@@ -51,7 +51,7 @@ class TagRepository
   def self.tagObject(objectId, tagId)
     insert =  <<-SQL
       INSERT INTO tag_objects
-      values (NULL, $1, $2, datetime('now'))
+      values (DEFAULT, $1, $2, now())
       SQL
     $conn.exec_params(insert, [objectId, tagId])
     update =  <<-SQL

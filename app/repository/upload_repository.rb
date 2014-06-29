@@ -110,10 +110,11 @@ class UploadRepository
   def self.save(upload)
     insert =  <<-SQL
       INSERT INTO uploads
-      values (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      values (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      RETURNING id
       SQL
-    #$db.execute(insert, upload.upload_datetime, upload.type, upload.file_name, upload.original_file_name, upload.userid, upload.overallScore, upload.numOfRatings, upload.averageScore , upload.title, upload.description)
-    #upload_id = $db.last_insert_row_id()
+    upload_id = $conn.exec_params(insert, [upload.upload_datetime, upload.type, upload.file_name, upload.original_file_name, upload.userid, upload.overallScore, upload.numOfRatings, upload.averageScore , upload.title, upload.description])
+    upload_id[0]['id']
   end
 
   def self.transfer_file(file, file_name)
