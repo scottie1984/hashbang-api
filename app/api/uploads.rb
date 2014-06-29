@@ -86,7 +86,7 @@ module SocialChallenges
       if !upload then
         error! 'Upload not found', 404
       else
-        fname = UploadRepository.get_file_path upload.file_name
+        fname = upload.file_name
         maxWidthImage = params[:maxWidthImage]
         maxHeightImage = params[:maxHeightImage]
         maxWidthThumb = params[:maxWidthThumb]

@@ -10,6 +10,7 @@ gem 'rmagick'
 gem 'psych'
 gem 'pg'
 gem 'thin'
+gem 'aws-sdk'
 
 group :development, :test do
   gem 'rack-test'

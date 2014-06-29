@@ -1,4 +1,5 @@
 require 'pg'
+require 'aws-sdk'
 
 require_relative './../helpers/upload_model_helper'
 
@@ -118,7 +119,22 @@ class UploadRepository
   end
 
   def self.transfer_file(file, file_name)
-    FileUtils.cp(file.tempfile.path, self.get_file_path(file_name))
+    AWS.config({
+      :access_key_id => ENV['AWS_ACCESS_KEY_ID'],
+      :secret_access_key => ENV['AWS_SECRET_ACCESS_KEY'],
+      :region => 'eu-west-1',
+    })
+    bucket_name = 'hashbang'
+    #file_name = '*** Provide file name ****'
+
+    # Get an instance of the S3 interface.
+    s3 = AWS::S3.new
+
+    # Upload a file.
+    key = File.basename(file.tempfile.path)
+    s3.buckets[bucket_name].objects[file_name].write(:file => file.tempfile.path)
+    puts "Uploading file #{file_name} to bucket #{bucket_name}."
+    #FileUtils.cp(file.tempfile.path, self.get_file_path(file_name))
   end
 
   def self.get_file_path(file_name)
