@@ -12,7 +12,7 @@ class CommentHelper
         "id"=> comment['id'], 
         "username" => comment['username'],
         "comment" => comment['comment'],
-        "datetime" => comment['comment_datetime'],
+        "datetime" => CommentHelper.minutes_in_words(comment['comment_datetime'].to_datetime),
         "gravatar" => md5gravatar
       }.to_json))
     }

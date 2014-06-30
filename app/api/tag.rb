@@ -85,9 +85,9 @@ module SocialChallenges
         idstoignore = params[:ignoreIds].split(',').map { |s| s.to_i }
       end
       currentObject = UploadRepository.get_by_id params[:currentId]
-      idstoignore.push(currentObject.id)
+      idstoignore.push(currentObject.id.to_i)
       previousObject = UploadRepository.get_by_id params[:previousId]
-      idstoignore.push(previousObject.id)
+      idstoignore.push(previousObject.id.to_i)
       nextObject = TagUploadRepository.get_random_object_bytagname params[:tagName], idstoignore, params[:type]
       if !currentObject then
         error! 'Upload not found', 404
@@ -120,7 +120,7 @@ module SocialChallenges
       if currentObject == false then
         currentObject = TagUploadRepository.get_random_object_bytagname params[:tagName], Array[-1], params[:type]
       end
-      idstoignore.push(currentObject.id) 
+      idstoignore.push(currentObject.id.to_i) 
       nextObject = TagUploadRepository.get_random_object_bytagname params[:tagName], idstoignore, params[:type]
       if !currentObject then
         error! 'Upload not found', 404

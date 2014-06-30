@@ -103,7 +103,7 @@ class UploadRepository
       order by up.upload_datetime desc
       SQL
     search = '%' + search + '%'
-    results = $conn.exec_params(select, [search, type]).sample(number.to_i)
+    results = $conn.exec_params(select, [search, type]).to_a.sample(number.to_i)
     uploads = UploadModelHelper.cast_upload_results results
     uploads
   end

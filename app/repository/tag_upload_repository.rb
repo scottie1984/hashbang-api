@@ -28,11 +28,15 @@ def self.get_random_object_bytagname(id, excludeIds, tagType)
     SQL
   results = $conn.exec_params(select, [id, tagType])
   
-  puts results
+  #puts results
+  #puts excludeIds
   
   uploads = UploadModelHelper.cast_upload_results results
-  uploads_temp = uploads
-  uploads.delete_if { |upload| excludeIds.include?(upload.id) }
+  #uploads.each {|upload| puts upload.id}
+  uploads_temp = uploads.to_a
+  uploads_temp.delete_if { |upload| excludeIds.include?(upload.id.to_i) }
+  #
+  uploads_temp.each {|upload| puts upload.id}
   
   if uploads.count != 0
     randIndex = Random.new.rand(0..uploads.count-1)

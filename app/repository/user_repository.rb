@@ -26,10 +26,10 @@ class UserRepository
   
   def self.popular(number)
     select =  <<-SQL
-      select ',',us.username, sum(up.overallScore), 'user' as totalScore from uploads up, users us
+      select ',',us.username as tagname, sum(up.overallScore) as numofobjects, 'user' as type from uploads up, users us
       where up.userid = us.id
       group by up.userid,us.username
-      order by totalScore desc
+      order by numofobjects desc
       limit $1
       SQL
     rows = $conn.exec_params(select, [number])
