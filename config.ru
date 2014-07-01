@@ -5,6 +5,7 @@ require './app/api/tag'
 require './app/api/leaderboard'
 require './app/api/users'
 require './app/api/comment'
+require './app/api/feedback'
 require 'rack/cors'
 
 use Rack::Cors do
@@ -40,4 +41,8 @@ end
 
 map '/comment' do
   run SocialChallenges::CommentAPI
+end
+
+map '/feedback' do
+  run SocialChallenges::FeedbackAPI
 end

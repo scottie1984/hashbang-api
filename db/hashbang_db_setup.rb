@@ -125,6 +125,15 @@ module HashBangDB
       );
     SQL
     )
+    $conn.exec(
+    <<-SQL
+    CREATE TABLE feedback (
+      id serial PRIMARY KEY,
+      feedback_datetime timestamp NOT NULL,
+      feedback TEXT NOT NULL
+      );
+    SQL
+    )
   end
 
   def self.seed_uploads(uploads)
