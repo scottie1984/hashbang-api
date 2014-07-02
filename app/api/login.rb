@@ -2,6 +2,7 @@ require 'grape'
 require 'json'
 require 'rack/contrib'
 require 'warden'
+require 'digest/md5'
 
 require_relative './../model/user'
 require_relative './../model/warden'
@@ -69,7 +70,8 @@ module SocialChallenges
 
     post 'get/email' do
       email = User.getEmailAddress(params[:userId])
-          { "email" => email[0] }
+      md5gravatar = Digest::MD5.hexdigest( email[0]['email'])
+          { "gravatar" => md5gravatar }
       end
 
     post 'change-password' do
