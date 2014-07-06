@@ -75,8 +75,8 @@ module HashBangDB
         overallScore INTEGER,
         numOfRatings INTEGER,
         averageScore REAL NOT NULL,
-        title VARCHAR(255) NOT NULL,
-        description VARCHAR(255) NULL
+        title TEXT NOT NULL,
+        description TEXT NULL
         );
       SQL
     )
@@ -206,6 +206,11 @@ module HashBangDB
     $conn.exec(
     <<-SQL
     DROP TABLE comments cascade;
+    SQL
+    )
+    $conn.exec(
+    <<-SQL
+    DROP TABLE feedback cascade;
     SQL
     )
   end
