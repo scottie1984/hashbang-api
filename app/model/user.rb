@@ -37,7 +37,7 @@ end
     def self.usernameDoesNotExist(username)
       row = $conn.exec_params("select * from users where username = $1", [username])
       userDoesNotExists = false
-      if row == nil
+      if row.num_tuples.zero?
         userDoesNotExists = true
       end
       userDoesNotExists
@@ -46,7 +46,7 @@ end
     def self.emailDoesNotExist(email)
       row = $conn.exec_params("select * from users where email = $1", [email])
       emailDoesNotExists = false
-      if row == nil
+      if row.num_tuples.zero?
         emailDoesNotExists = true
       end
       emailDoesNotExists
@@ -59,35 +59,37 @@ end
     def self.save(username, password, email)
       insert =  <<-SQL
         INSERT INTO users
-        values (DEFAULT, $1, $2, $3, "inactive", 0)
+        values (DEFAULT, $1, $2, $3, 'inactive', 0)
         RETURNING id
         SQL
       
       userId = $conn.exec_params(insert, [username, Password.create(password),email])
       
-      token = createToken(userId[0])
+      token = createToken(userId[0]['id'])
       sendNewUserEmail(email, token)  
     end
     
     def self.sendNewUserEmail(email, token)
       message = <<-MESSAGE_END
-      From: Social Challanges <me@fromdomain.com>
+      From: Hashbang.it <hashbang14@gmail.com>
       To: A Test User <#{email}>
       Subject: SMTP e-mail test
 
       Please use this token to login http://#{CONFIG['frontend_url']}/#!/user/#{token}
       MESSAGE_END
+      
+      smtp = Net::SMTP.new 'smtp.gmail.com', 587
+      smtp.enable_starttls
 
-      Net::SMTP.start('localhost', 1025) do |smtp|
-        smtp.send_message message, 'me@fromdomain.com', 
-                                   'test@todomain.com'
+      smtp.start('gmail.com', ENV['GMAIL_USER'], ENV['GMAIL_PASS'], :login) do |smtp|
+        smtp.send_message message, 'hashbang14@gmail.com', email
       end
     end
     
     def self.sendForgotPassword(email)
       row = $conn.exec_params("select * from users where email = $1 and status='active' and loginAttempts < 5", [email])
-      if row != nil
-        token = createToken(row[0]) 
+      if !row.num_tuples.zero?
+        token = createToken(row[0]['id']) 
         sendForgotPasswordEmail(email, token)
       end
     end
@@ -96,7 +98,7 @@ end
       token = SecureRandom.uuid
         insertToken =  <<-SQL
           INSERT INTO user_token
-          values (DEFAULT, $1, now()+ '30 minutes'::interval, ?)
+          values (DEFAULT, $1, now()+ '30 minutes'::interval, $2)
           SQL
       $conn.exec_params(insertToken, [userId, token])
       token
@@ -104,32 +106,34 @@ end
     
     def self.sendForgotPasswordEmail(email, token)
       message = <<-MESSAGE_END
-      From: Social Challanges <me@fromdomain.com>
+      From: Hashbang.it <hashbang14@gmail.com>
       To: A Test User <#{email}>
       Subject: SMTP e-mail test
 
       Please use this token to change your password http://#{CONFIG['frontend_url']}/#!/forgot/#{token}
       MESSAGE_END
 
-      Net::SMTP.start('localhost', 1025) do |smtp|
-        smtp.send_message message, 'me@fromdomain.com', 
-                                   'test@todomain.com'
+      smtp = Net::SMTP.new 'smtp.gmail.com', 587
+      smtp.enable_starttls
+
+      smtp.start('gmail.com', ENV['GMAIL_USER'], ENV['GMAIL_PASS'], :login) do |smtp|
+        smtp.send_message message, 'hashbang14@gmail.com', email
       end
     end
     
     def self.getIdFromToken(token)
       tokenDetails = getActiveToken(token)
       id = -1
-      if tokenDetails != nil
-        id = tokenDetails[1]
+      if !tokenDetails.num_tuples.zero?
+        id = tokenDetails[0]['userid']
       end
       id
     end
     
     def self.activate(token)
       tokenDetails = getActiveToken(token)
-      if tokenDetails != nil
-        activateUserAccount(tokenDetails[1])
+      if !tokenDetails.num_tuples.zero?
+        activateUserAccount(tokenDetails[0]['userid'].to_i)
         true
       else
         false
@@ -139,7 +143,7 @@ end
     def self.activateUserAccount(id)
       update =  <<-SQL
         update users
-        set status = "active"  
+        set status = 'active'  
         where id = $1
         SQL
         $conn.exec_params(update, [id])
