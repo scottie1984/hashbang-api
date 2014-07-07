@@ -117,8 +117,36 @@ class UploadRepository
     upload_id = $conn.exec_params(insert, [upload.upload_datetime, upload.type, upload.file_name, upload.original_file_name, upload.userid, upload.overallScore, upload.numOfRatings, upload.averageScore , upload.title, upload.description])
     upload_id[0]['id']
   end
+  
+  def self.delete(id)
+    delete =  <<-SQL
+      DELETE FROM uploads
+      WHERE id = $1
+      SQL
+      $conn.exec_params(delete, [id])
+  end
+  
+  def self.delete_from_amazon(file_name)
+		newFileResizedThumb = file_name[/[^.]+/]+'_thumb.jpg'
+		newFileResizedMedium = file_name[/[^.]+/]+'_medium.jpg'
+    
+    key_thumb = File.basename(newFileResizedThumb)
+    key_medium = File.basename(newFileResizedMedium)
+    AWS.config({
+      :access_key_id => ENV['AWS_ACCESS_KEY_ID'],
+      :secret_access_key => ENV['AWS_SECRET_ACCESS_KEY'],
+      :region => 'eu-west-1',
+    })
+    bucket_name = 'hashbang'
+    #file_name = '*** Provide file name ****'
+    s3 = AWS::S3.new
+    
+    s3.buckets[bucket_name].objects[file_name].delete()
+    s3.buckets[bucket_name].objects[key_thumb].delete()
+    s3.buckets[bucket_name].objects[key_medium].delete()
+  end
 
-  def self.transfer_file(file, file_name)
+  def self.transfer_file(file, file_name)    
     AWS.config({
       :access_key_id => ENV['AWS_ACCESS_KEY_ID'],
       :secret_access_key => ENV['AWS_SECRET_ACCESS_KEY'],

@@ -108,6 +108,19 @@ module SocialChallenges
         }
       end  
     end  
+    
+    post '/delete/:id' do
+      user_token = params[:usertoken]
+      errors << Error.new("user_token", "The userid field is required") if user_token.empty? || user_token == 'undefined'
+      user = User.get(user_token)
+      error! "Unauthorized", 401 unless user != nil
+      id = params[:id]
+      upload = UploadRepository.get_by_id(id.to_i)
+      if upload.type === 'image'
+        UploadRepository.delete_from_amazon upload.file_name
+      end
+      UploadRepository.delete id
+    end
 
     post '/add' do
       errors = Array.new
