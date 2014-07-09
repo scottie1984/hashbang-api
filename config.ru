@@ -6,6 +6,7 @@ require './app/api/leaderboard'
 require './app/api/users'
 require './app/api/comment'
 require './app/api/feedback'
+require './app/api/sitemap'
 require 'rack/cors'
 
 use Rack::Cors do
@@ -45,4 +46,8 @@ end
 
 map '/feedback' do
   run SocialChallenges::FeedbackAPI
+end
+
+map '/sitemap' do
+  run SocialChallenges::SitemapAPI
 end
