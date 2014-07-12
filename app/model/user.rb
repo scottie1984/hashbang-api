@@ -71,12 +71,12 @@ end
     
     def self.sendNewUserEmail(email, token)
       message = <<-MESSAGE_END
-      From: Hashbang.it <hashbang14@gmail.com>
-      To: A Test User <#{email}>
-      Subject: SMTP e-mail test
+From: Hashbang.it <hashbang14@gmail.com>
+To: #{email} <#{email}>
+Subject: Activate your account.
 
-      Please use this token to login http://#{CONFIG['frontend_url']}/#!/user/#{token}
-      MESSAGE_END
+Please click this link to activate your account: http://#{CONFIG['frontend_url']}/#!/user/#{token}
+MESSAGE_END
       
       smtp = Net::SMTP.new 'smtp.gmail.com', 587
       smtp.enable_starttls
@@ -106,12 +106,12 @@ end
     
     def self.sendForgotPasswordEmail(email, token)
       message = <<-MESSAGE_END
-      From: Hashbang.it <hashbang14@gmail.com>
-      To: A Test User <#{email}>
-      Subject: SMTP e-mail test
+From: Hashbang.it <hashbang14@gmail.com>
+To: #{email} <#{email}>
+Subject: Password reset.
 
-      Please use this token to change your password http://#{CONFIG['frontend_url']}/#!/forgot/#{token}
-      MESSAGE_END
+Please click the following link to reset your password: http://#{CONFIG['frontend_url']}/#!/forgot/#{token}
+MESSAGE_END
 
       smtp = Net::SMTP.new 'smtp.gmail.com', 587
       smtp.enable_starttls
