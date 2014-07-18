@@ -15,6 +15,10 @@ namespace :db do
     HashBangDB.drop()
     puts "Creating the hashbang database..."
     HashBangDB.setup()
+    puts "Done"
+  end
+  
+  task :local do
     puts "Seeding database..."
     HashBangDB.seed_uploads(Parser.parse_uploads('db/local/uploads.csv', Uploadmodel))
     HashBangDB.seed_tags(Parser.parse_tags('db/local/tags.csv', Tag))
